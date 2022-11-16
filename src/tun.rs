@@ -59,9 +59,37 @@ impl XBTun {
         max_ip_cache: Duration,
         disable_ipv4: bool,
         disable_ipv6: bool,
+        set_ip: Option<String>,
+        set_up: bool,
     ) -> io::Result<XBTun> {
         let tun = Iface::without_packet_info(&iface_name_requested, Mode::Tun)?;
         let name = tun.name();
+
+        // TODO: This should use ioctl to be more portable
+
+        if set_up {
+            assert_eq!(
+                std::process::Command::new("ip")
+                    .args(["link", "set", name, "up"])
+                    .status()
+                    .unwrap()
+                    .code(),
+                Some(0)
+            );
+            info!("Set interface to up")
+        }
+
+        if let Some(ip) = set_ip {
+            assert_eq!(
+                std::process::Command::new("ip")
+                    .args(["addr", "add", &ip, "dev", name])
+                    .status()
+                    .unwrap()
+                    .code(),
+                Some(0)
+            );
+            info!("Set ip to {}", ip)
+        }
 
         println!("Interface {} (XBee MAC {:x}) ready", name, myxbmac,);
 
