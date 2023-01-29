@@ -16,7 +16,7 @@
 
 [package]
 name = "xbnet"
-version = "1.2.0"
+version = "1.2.1"
 authors = ["John Goerzen <jgoerzen@complete.org>"]
 edition = "2018"
 license = "GPL-3.0+"
