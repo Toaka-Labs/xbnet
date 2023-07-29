@@ -1,0 +1,11 @@
+[Unit]
+Description=XBNet interface
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/xbnet-launcher
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

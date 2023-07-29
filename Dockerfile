@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim AS base
+FROM ubuntu:22.04 AS build
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y ca-certificates build-essential pkg-config libudev-dev curl\
