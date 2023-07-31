@@ -10,6 +10,7 @@ RUN . $HOME/.cargo/env && cargo install cargo-deb
 COPY . /opt/xbnet
 
 RUN . $HOME/.cargo/env && cd /opt/xbnet && cargo build --release && cargo deb
+RUN apt install /opt/xbnet/target/debian/xbnet_1.1.0_amd64.deb
 
 #FROM scratch AS xbnet
 #COPY --from=base /opt/xbnet/target/release/xbnet /bin/
