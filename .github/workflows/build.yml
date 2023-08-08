@@ -24,8 +24,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Install cross
-        run: cargo install cross
+      - name: Install cross & deb
+        run: cargo install cross cargo-deb
       - name: Build
         run: cross build --verbose --release --target=${{ matrix.target }}
       - name: Deb
