@@ -25,7 +25,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
       - name: Install Build Tools
-        run: cargo install cross cargo-deb && apt install gcc-arm-linux-gnueabi
+        run: cargo install cross cargo-deb && sudo apt-get install -y gcc-arm-linux-gnueabi
       - name: Build
         run: cross build --verbose --release --target=${{ matrix.target }}
       - name: Deb Package
