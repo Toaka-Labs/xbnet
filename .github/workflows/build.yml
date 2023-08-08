@@ -28,6 +28,8 @@ jobs:
         run: cargo install cross
       - name: Build
         run: cross build --verbose --release --target=${{ matrix.target }}
+      - name: Deb
+        run: cargo deb --target=${{ matrix.target }} --no-build && ls target
         # Note: There aren't currently any tests to run
       # - name: Run tests
       #   run: cargo test --verbose
