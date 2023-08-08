@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04]
         target:
           - x86_64-unknown-linux-gnu
           - arm-unknown-linux-gnueabihf
@@ -24,12 +24,12 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: Install cross & deb
+      - name: Install Build Tools
         run: cargo install cross cargo-deb
       - name: Build
         run: cross build --verbose --release --target=${{ matrix.target }}
-      - name: Deb
-        run: cargo deb --target=${{ matrix.target }} --no-build && ls target
+      - name: Deb Package
+        run: cargo deb --target=${{ matrix.target }} --no-build --no-strip
         # Note: There aren't currently any tests to run
       # - name: Run tests
       #   run: cargo test --verbose
