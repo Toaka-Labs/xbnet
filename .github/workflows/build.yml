@@ -24,22 +24,21 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      - name: APT Installs
-        run: sudo apt update && sudo apt-get install -y gcc-arm-linux-gnueabi
+      # - name: APT Installs
+      #   run: sudo apt update && sudo apt-get install -y gcc-arm-linux-gnueabi
       - name: Install Build Tools
-        run: cargo install cross cargo-deb && sudo apt-get install -y gcc-arm-linux-gnueabi
+        run: cargo install cross cargo-deb
       - name: Build
         run: cross build --verbose --release --target=${{ matrix.target }}
       - name: Deb Package
         run: cargo deb --target=${{ matrix.target }} --no-build --no-strip
-        # Note: There aren't currently any tests to run
-      # - name: Run tests
-      #   run: cargo test --verbose
       - name: Upload Binary
         uses: actions/upload-artifact@v3
         with:
           name: xbnet-${{ matrix.target }}
-          path: target/${{ matrix.target }}/release/xbnet
+          path: |
+            target/${{ matrix.target }}/release/xbnet
+            target/${{ matrix.target }}/debian/*.deb
 
   release:
     needs: build
