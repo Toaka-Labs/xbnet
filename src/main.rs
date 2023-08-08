@@ -127,6 +127,13 @@ enum Command {
         #[structopt(long)]
         disable_ipv6: bool,
 
+        /// Set the ip of the tun interface when creating. Accepts an IP or CIDR range
+        #[structopt(long)]
+        set_ip: Option<String>,
+
+        /// Set the tun interface to up after creating it
+        #[structopt(long)]
+        set_up: bool,
     },
 }
 
@@ -206,11 +213,21 @@ fn main() {
             max_ip_cache,
             disable_ipv4,
             disable_ipv6,
+            set_ip,
+            set_up,
         } => {
             let max_ip_cache = Duration::from_secs(max_ip_cache);
-            let tun_reader =
-                tun::XBTun::new_tun(xb.mymac, broadcast_everything, iface_name, max_ip_cache, disable_ipv4, disable_ipv6)
-                    .expect("Failure initializing tun");
+            let tun_reader = tun::XBTun::new_tun(
+                xb.mymac,
+                broadcast_everything,
+                iface_name,
+                max_ip_cache,
+                disable_ipv4,
+                disable_ipv6,
+                set_ip,
+                set_up,
+            )
+            .expect("Failure initializing tun");
             let tun_writer = tun_reader.clone();
             thread::spawn(move || {
                 tun_writer

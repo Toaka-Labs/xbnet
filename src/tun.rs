@@ -29,6 +29,7 @@ use crossbeam_channel;
 use etherparse::*;
 use log::*;
 use std::collections::HashMap;
+use std::ffi::OsStr;
 use std::io;
 use std::net::IpAddr;
 use std::sync::{Arc, Mutex};
@@ -51,6 +52,22 @@ pub struct XBTun {
     pub dests: Arc<Mutex<HashMap<IpAddr, (u64, Instant)>>>,
 }
 
+fn run_ip_cmd<I, S>(args: I)
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<OsStr>,
+{
+    assert_eq!(
+        std::process::Command::new("ip")
+            .args(args)
+            .status()
+            .expect("Ensure the 'ip' command from 'iproute2' is available")
+            .code(),
+        Some(0),
+        "ip exited with nonzero exit code"
+    );
+}
+
 impl XBTun {
     pub fn new_tun(
         myxbmac: u64,
@@ -59,9 +76,23 @@ impl XBTun {
         max_ip_cache: Duration,
         disable_ipv4: bool,
         disable_ipv6: bool,
+        set_ip: Option<String>,
+        set_up: bool,
     ) -> io::Result<XBTun> {
         let tun = Iface::without_packet_info(&iface_name_requested, Mode::Tun)?;
         let name = tun.name();
+
+        // TODO: This should use ioctl to be more portable
+
+        if set_up {
+            run_ip_cmd(["link", "set", name, "up"]);
+            info!("Set interface to up");
+        }
+
+        if let Some(ip) = set_ip {
+            run_ip_cmd(["addr", "add", &ip, "dev", name]);
+            info!("Set ip to {}", ip);
+        }
 
         println!("Interface {} (XBee MAC {:x}) ready", name, myxbmac,);
 
@@ -86,9 +117,7 @@ impl XBTun {
 
         match self.dests.lock().unwrap().get(ipaddr) {
             // Broadcast if we don't know it
-            None => {
-                XB_BROADCAST
-            },
+            None => XB_BROADCAST,
             Some((dest, expiration)) => {
                 if Instant::now() >= *expiration {
                     // Broadcast it if the cache entry has expired
@@ -117,16 +146,18 @@ impl XBTun {
                     let ips = extract_ips(&packet);
                     if let Some((source, destination)) = ips {
                         match destination {
-                            IpAddr::V6(_) =>
+                            IpAddr::V6(_) => {
                                 if self.disable_ipv6 {
                                     debug!("Dropping packet because --disable-ipv6 given");
                                     continue;
-                                },
-                            IpAddr::V4(_) =>
+                                }
+                            }
+                            IpAddr::V4(_) => {
                                 if self.disable_ipv4 {
                                     debug!("Dropping packet because --disable-ipv4 given");
                                     continue;
                                 }
+                            }
                         };
 
                         let destxbmac = self.get_xb_dest_mac(&destination);
@@ -176,16 +207,18 @@ impl XBTun {
                     if let Some((source, destination)) = ips {
                         trace!("SERIN: Packet is {} -> {}", source, destination);
                         match source {
-                            IpAddr::V6(_) =>
+                            IpAddr::V6(_) => {
                                 if self.disable_ipv6 {
                                     debug!("Dropping packet because --disable-ipv6 given");
                                     continue;
-                                },
-                            IpAddr::V4(_) =>
+                                }
+                            }
+                            IpAddr::V4(_) => {
                                 if self.disable_ipv4 {
                                     debug!("Dropping packet because --disable-ipv4 given");
                                     continue;
                                 }
+                            }
                         }
                         if !self.broadcast_everything {
                             self.dests.lock().unwrap().insert(
