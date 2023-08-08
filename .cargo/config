@@ -1,0 +1,7 @@
+[target.arm-unknown-linux-gnueabihf]
+objcopy = { path ="arm-none-eabi-objcopy" }
+strip = { path ="arm-none-eabi-strip" }
+
+[target.aarch64-unknown-linux-gnu]
+objcopy = { path ="arm-none-eabi-objcopy" }
+strip = { path ="arm-none-eabi-strip" }
