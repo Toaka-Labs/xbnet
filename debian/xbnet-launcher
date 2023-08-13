@@ -1,35 +1,58 @@
 #!/usr/bin/env bash
 set -e
 
+# Check for root
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
     exit 1
 fi
 
+# Load config ENV vars
 source /etc/xbnet/xbnet.conf
 
+# Check that config file was valid
 if [[ ! -v SERIAL_BAUD ]]; then
     echo "Config file missing SERIAL_BAUD parameter"
     exit 1
 fi
 
 if [[ ! -v SERIAL_PORT ]]; then
-    echo "Config file missing SERIAL_BAUD parameter"
+    echo "Config file missing SERIAL_PORT parameter"
     exit 1
 fi
 
 if [[ ! -v DISABLE_ACK ]]; then
-    echo "Config file missing SERIAL_BAUD parameter"
+    echo "Config file missing DISABLE_ACK parameter"
     exit 1
 fi
 
 if [[ ! -v XBNET_APP ]]; then
-    echo "Config file missing SERIAL_BAUD parameter"
+    echo "Config file missing XBNET_APP parameter"
     exit 1
 fi
 
 if [ "$DISABLE_ACK" = true ]; then
-    ACK_ARG="--disable-xbee-acks"
+    XBNET_ARGS="--disable-xbee-acks"
 fi
 
-xbnet -d $ACK_ARG --serial-speed $SERIAL_BAUD $SERIAL_PORT $XBNET_APP
+APP_ARGS=""
+
+# Apply TUN specific arguments
+if [ "$XBNET_APP" = "tun" ]; then
+    if [ "$DISABLE_IPV4" = true ]; then
+        APP_ARGS="${APP_ARGS} --disable-ipv4"
+    fi
+
+    if [ "$DISABLE_IPV6" = true ]; then
+        APP_ARGS="${APP_ARGS} --disable-ipv6"
+    fi
+
+    if [ "$AUTOSTART" = true ]; then
+        APP_ARGS="${APP_ARGS} --set-up"
+    fi
+
+    APP_ARGS="${APP_ARGS} --set-ip ${IP}"
+fi
+
+# Run xbnet
+xbnet -d $XBNET_ARGS --serial-speed $SERIAL_BAUD $SERIAL_PORT $XBNET_APP $APP_ARGS
