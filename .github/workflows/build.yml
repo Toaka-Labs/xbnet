@@ -51,15 +51,15 @@ jobs:
     steps:
       - name: Dowload Binaries
         uses: actions/download-artifact@v3
-      - name: Rename Binaries
-        run: |
-          for file in $(find -name xbnet)
-          do
-            new_file="${file%%-unknown*}"
-            mv -v "$file" "$new_file"
-            rmdir -v "${file%/*}"
-            sha256sum "$new_file" | tee "$new_file".sha256
-          done
+      # - name: Rename Binaries
+      #   run: |
+      #     for file in $(find -name xbnet)
+      #     do
+      #       new_file="${file%%-unknown*}"
+      #       mv -v "$file" "$new_file"
+      #       rmdir -v "${file%/*}"
+      #       sha256sum "$new_file" | tee "$new_file".sha256
+      #     done
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
