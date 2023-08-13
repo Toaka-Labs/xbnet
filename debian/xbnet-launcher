@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -e
+
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root"
+    exit 1
+fi
+
+source /etc/xbnet/xbnet.conf
+
+if [[ ! -v SERIAL_BAUD ]]; then
+    echo "Config file missing SERIAL_BAUD parameter"
+    exit 1
+fi
+
+if [[ ! -v SERIAL_PORT ]]; then
+    echo "Config file missing SERIAL_BAUD parameter"
+    exit 1
+fi
+
+if [[ ! -v DISABLE_ACK ]]; then
+    echo "Config file missing SERIAL_BAUD parameter"
+    exit 1
+fi
+
+if [[ ! -v XBNET_APP ]]; then
+    echo "Config file missing SERIAL_BAUD parameter"
+    exit 1
+fi
+
+if [ "$DISABLE_ACK" = true ]; then
+    ACK_ARG="--disable-xbee-acks"
+fi
+
+xbnet -d $ACK_ARG --serial-speed $SERIAL_BAUD $SERIAL_PORT $XBNET_APP

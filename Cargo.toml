@@ -40,3 +40,16 @@ structopt = {version = "0.3", default-features = false}
 tun-tap = {version = "0.1.2", default-features = false}
 bytes = "0.5"
 etherparse = "0.9.0"
+
+[package.metadata.deb]
+maintainer-scripts = "debian/"
+systemd-units = { enable = false }
+depends = "$auto"
+conf-files = [
+    "etc/xbnet/xbnet.conf"
+]
+assets = [
+    ["debian/xbnet-launcher", "usr/bin/", "755"],
+    ["target/release/xbnet", "usr/bin/", "755"],
+    ["debian/xbnet.conf", "etc/xbnet/xbnet.conf", "644"]
+]

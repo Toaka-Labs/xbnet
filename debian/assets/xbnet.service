@@ -1,8 +1,0 @@
-[Unit]
-Description=Example
-
-[Service]
-ExecStart=/usr/bin/xbnet
-
-[Install]
-WantedBy=multi-user.target
