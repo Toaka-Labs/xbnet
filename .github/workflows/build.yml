@@ -27,8 +27,6 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
-      # - name: APT Installs
-      #   run: sudo apt update && sudo apt-get install -y gcc-arm-linux-gnueabi
       - name: Install Build Tools
         run: cargo install cross cargo-deb
       - name: Build
@@ -45,15 +43,14 @@ jobs:
 
   release:
     needs: build
-    # if: startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
 
     steps:
       - name: Dowload Binaries
         uses: actions/download-artifact@v3
-      - name: Rename Binaries
-        run: |
-          ls -la
+      - name: Move Debs
+        run: find . -name \*.deb -exec cp {} ./ \;
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
