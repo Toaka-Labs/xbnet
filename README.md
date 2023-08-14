@@ -1,7 +1,12 @@
 # XBee Networking Tools
 
-![build](https://github.com/jgoerzen/xbnet/workflows/build/badge.svg) ![docs](https://docs.rs/xbnet/badge.svg)
+![build](https://github.com/Toaka-Labs/xbnet/workflows/build/badge.svg) ![docs](https://docs.rs/xbnet/badge.svg)
 
+This is a fork of John Goerzen's xbnet project, with additions from the Rose-Rocketry fork. We've added .deb package exports as well as a systemd service and config.
+
+WIP - documentation coming!
+
+# Original Readme
 
 This package is for doing fantastic things with your XBee device.  You can, of course, already use it as a serial replacement, so you can run PPP and UUCP across it.  XBee radios are low-cost, long-range, low-speed devices; with bitrates from 10Kbps to 250Kbps, they can reach many miles using simple antennas and low cost.
 
@@ -11,7 +16,7 @@ This is tested with the XBee SX modules, but ought to work with any modern XBee 
 
 XBee devices are particularly interesting because of their self-healing mesh (DigiMesh) technology.  They will auto-route traffic to the destination, via intermediate hops if necessary.  They also support bitrates high enough for a TCP stack, with nearly the range of LoRA.
 
-**For details, see the [extensive documentation](https://github.com/jgoerzen/xbnet/blob/master/doc/xbnet.1.md)**.
+**For details, see the [extensive documentation](https://github.com/Toaka-Labs/xbnet/blob/master/doc/xbnet.1.md)**.
 
 This is a followup to, and fork of, my [lorapipe](https://github.com/jgoerzen/lorapipe) project, which is something similar for LoRA radios.
 
